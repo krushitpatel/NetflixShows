@@ -15,6 +15,8 @@ import com.example.krushitpatel.netflixshows.Adapter.Movie;
 import com.example.krushitpatel.netflixshows.Adapter.RecyclerviewAdapter;
 import com.example.krushitpatel.netflixshows.R;
 import com.facebook.drawee.backends.pipeline.Fresco;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -52,19 +54,14 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                  data = editText.getText().toString();
-                if(!data.isEmpty()){
-                    UrlPath = URL+data;
+                UrlPath = URL+data;
+                if(!data.isEmpty() && !UrlPath.isEmpty()){
+                    new GetMovie().execute();
                 }else {
                     editText.setText("");
-                    Toast.makeText(MainActivity.this,"Please enter the name..",Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this,"Please insert correct data..",Toast.LENGTH_LONG).show();
                 }
 
-                if(UrlPath != null){
-                    new GetMovie().execute();
-                }else{
-                    Toast.makeText(MainActivity.this,"No data",Toast.LENGTH_LONG).show();
-
-                }
             }
         });
 
@@ -86,6 +83,19 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected ArrayList<Movie> doInBackground(Object... params) {
             try {
+                   /* JSONObject jsonObject = getData().getJSONObject(i);
+                    movie.show_title = jsonObject.getString("show_title");
+                    movie.poster = jsonObject.getString("poster");
+                    movie.runtime = jsonObject.getString("runtime");
+                    movie.category = jsonObject.getString("category");
+                    movie.unit = Integer.parseInt(jsonObject.getString("unit"));
+                    movie.show_id = Integer.parseInt(jsonObject.getString("show_id"));
+                    movie.release_year = jsonObject.getString("release_year");
+                    movie.rating = jsonObject.getString("rating");
+                    movie.show_cast = jsonObject.getString("show_cast");
+                    movie.director = jsonObject.getString("director");
+                    movie.summary = jsonObject.getString("summary");
+                    movie.mediatype = jsonObject.getInt("mediatype");*/
                 movie.show_title = getData().getString("show_title");
                 movie.poster = getData().getString("poster");
                 movie.runtime = getData().getString("runtime");
@@ -98,11 +108,20 @@ public class MainActivity extends AppCompatActivity {
                 movie.director = getData().getString("director");
                 movie.summary = getData().getString("summary");
                 movie.mediatype = Integer.parseInt(getData().getString("mediatype"));
+//                    movieList.add(movie);
+
 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            movieList.add(movie);
+            if(movieList.isEmpty()){
+                movieList.add(movie);
+            }else{
+                movieList.clear();
+                movieList.add(movie);
+            }
+
+
             Log.d("Movie data", movieList.toString());
 
 
@@ -112,12 +131,13 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(ArrayList<Movie> aVoid) {
             super.onPostExecute(aVoid);
             progressDialog.dismiss();
-            recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
-            recyclerView.setHasFixedSize(true);
-            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
-            recyclerView.setLayoutManager(layoutManager);
-            recyclerviewAdapter = new RecyclerviewAdapter(getApplicationContext(),movieList);
-            recyclerView.setAdapter(recyclerviewAdapter);
+                recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
+                recyclerView.setHasFixedSize(true);
+                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerviewAdapter = new RecyclerviewAdapter(getApplicationContext(),movieList);
+                recyclerView.setAdapter(recyclerviewAdapter);
+
         }
     }
     public JSONObject getData(){
