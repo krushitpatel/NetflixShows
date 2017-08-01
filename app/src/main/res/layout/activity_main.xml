@@ -6,32 +6,25 @@
     android:layout_height="match_parent"
     tools:context="com.example.krushitpatel.netflixshows.Activity.MainActivity">
 <RelativeLayout
-    android:layout_width="0dp"
-    android:layout_height="495dp"
-    tools:layout_editor_absoluteY="8dp"
-    tools:layout_editor_absoluteX="8dp">
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    tools:layout_editor_absoluteY="0dp"
+    tools:layout_editor_absoluteX="-16dp">
+
     <EditText
+        android:id="@+id/search"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Search here !"
-        android:id="@+id/search"
-        ></EditText>
+        android:layout_marginRight="100dp"
+        android:hint="Search here !">
+    </EditText>
     <Button
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:text="Search"
-        android:layout_alignEnd="@+id/recyclerview"
-        android:layout_above="@id/recyclerview"
-        android:layout_alignRight="@+id/search"
-        android:id="@+id/searchButton"/>
-
-    <android.support.v7.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/recyclerview"
-        android:layout_below="@+id/search"
-        app:layout_constraintRight_toRightOf="parent"
-        tools:layout_editor_absoluteY="-10dp"
-         />
+        android:id="@+id/searchButton"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true" />
 </RelativeLayout>
 </android.support.constraint.ConstraintLayout>
