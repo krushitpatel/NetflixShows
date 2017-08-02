@@ -20,8 +20,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
+import butterknife.BindViews;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import okhttp3.OkHttpClient;
@@ -30,33 +32,32 @@ import okhttp3.Response;
 
 
 public class MainActivity extends AppCompatActivity {
-    RecyclerView recyclerView;
-    private RecyclerviewAdapter recyclerviewAdapter;
-    private ProgressDialog progressDialog;
-    ArrayList<Movie> movieList;
     private String TitleURL = "https://netflixroulette.net/api/api.php?title=";
     private String ActorURL = "http://netflixroulette.net/api/api.php?actor=";
     String UrlTitlePath,UrlActorPath;
-    Movie movie;
-    String data;
-    @BindView(R.id.search) EditText editText;
+    String dataMovieTitle,dataActor;
+    @BindViews({R.id.searchMovie,R.id.searchActor})
+    List<EditText> editText;
     @BindView(R.id.searchButton) Button searchButton;
+
     private static Response response;
     @OnClick(R.id.searchButton) void buttonClicked(){
-        data = editText.getText().toString();
-                UrlTitlePath = TitleURL+data;
+        dataMovieTitle = editText.get(0).getText().toString();
+        dataActor = editText.get(1).getText().toString();
+                UrlTitlePath = TitleURL+dataMovieTitle;
+                UrlActorPath = ActorURL+dataActor;
                 Intent intent = new Intent(MainActivity.this,MovieListActivity.class);
-                intent.putExtra("urlTitle",UrlTitlePath);
+                if(UrlTitlePath!=null || UrlActorPath!=null){
+                    intent.putExtra("urlTitle",UrlTitlePath);
+                    intent.putExtra("urlActor",UrlActorPath);
+                }
                 startActivity(intent);
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         ButterKnife.bind(this);
-        Fresco.initialize(this);
-        movieList = new ArrayList<Movie>();
     }
 
 
