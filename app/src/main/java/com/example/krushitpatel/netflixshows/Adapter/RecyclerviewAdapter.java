@@ -13,10 +13,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.example.krushitpatel.netflixshows.Activity.MainActivity;
 import com.example.krushitpatel.netflixshows.R;
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.squareup.picasso.Picasso;
 
@@ -56,14 +58,12 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
 
         holder.name.setText(movieList.get(position).getShow_title());
          holder.imageView.setImageURI(Uri.parse(movieList.get(position).getPoster()));
-        holder.runtime.setText(movieList.get(position).getRuntime());
+        holder.ratingBar.setRating(Float.parseFloat(movieList.get(position).getRating()));
         holder.category.setText(movieList.get(position).getCategory());
-//        String s = movieList.get(position).getPoster();
-//        Uri uri = Uri.parse(s);
-//
-//        holder.imageView.setImageURI(s);
 
-    }
+//        Picasso.with(context).load(movieList.get(position).getPoster()).placeholder(R.drawable.placeholder)
+//                .resize(100,100).into(holder.imageView);
+}
 
     @Override
     public int getItemCount() {
@@ -72,14 +72,16 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
 
     public class RecyclerViewHolder extends RecyclerView.ViewHolder {
        // ImageView imageView;
-        TextView name, category, runtime;
-        SimpleDraweeView imageView;
+        TextView name, category;
+        RatingBar ratingBar;
+        SimpleDraweeView simpleDraweeView;
+        ImageView imageView;
         public RecyclerViewHolder(View itemView) {
             super(itemView);
             imageView = (SimpleDraweeView) itemView.findViewById(R.id.imagePoster);
             name = (TextView) itemView.findViewById(R.id.name);
             category = (TextView) itemView.findViewById(R.id.category);
-            runtime = (TextView) itemView.findViewById(R.id.runtime);
+            ratingBar = (RatingBar) itemView.findViewById(R.id.ratingBar);
         }
     }
 

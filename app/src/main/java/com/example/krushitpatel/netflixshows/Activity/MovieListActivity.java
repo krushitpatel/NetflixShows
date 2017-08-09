@@ -1,7 +1,6 @@
 package com.example.krushitpatel.netflixshows.Activity;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,6 +12,7 @@ import android.widget.Toast;
 import com.example.krushitpatel.netflixshows.Adapter.Movie;
 import com.example.krushitpatel.netflixshows.Adapter.RecyclerviewAdapter;
 import com.example.krushitpatel.netflixshows.R;
+import com.example.krushitpatel.netflixshows.Utils.ConnectionDetector;
 import com.facebook.drawee.backends.pipeline.Fresco;
 
 import org.json.JSONArray;
@@ -21,6 +21,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -30,26 +31,37 @@ public class MovieListActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     private RecyclerviewAdapter recyclerviewAdapter;
     private ProgressDialog progressDialog;
-    ArrayList<Movie> movieList;
+    ArrayList movieList;
     String urlTitle,urlActor;
     Movie movie;
     private static Response response;
+    String UrlTitlePath,UrlActorPath;
+    private String TitleURL = "https://netflixroulette.net/api/api.php?title=";
+    private String ActorURL = "http://netflixroulette.net/api/api.php?actor=";
+    Boolean isInternetPresent = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_list);
         Fresco.initialize(this);
-        movieList = new ArrayList<Movie>();
-
+        movieList = new ArrayList<>();
+        ConnectionDetector connectionDetector = new ConnectionDetector(this);
         urlTitle = getIntent().getStringExtra("urlTitle");
         urlActor = getIntent().getStringExtra("urlActor");
+        UrlTitlePath = TitleURL+urlTitle;
+        UrlActorPath = ActorURL+urlActor;
+        isInternetPresent = connectionDetector.isConnectingToInternet();
 //        UrlActorPath = ActorURL+data;
-        if(!urlTitle.isEmpty() || !urlActor.isEmpty()){
-            new GetMovie().execute();
-        }else {
-            //editText.setText("");
-            Toast.makeText(MovieListActivity.this,"Please insert correct data..",Toast.LENGTH_LONG).show();
+        if(!isInternetPresent){
+           Toast.makeText(this,"Please check your internet connection !",Toast.LENGTH_LONG).show();
+        }else{
+            if(!urlTitle.isEmpty() || !urlActor.isEmpty()){
+                new GetMovie().execute();
+            }else {
+                Toast.makeText(MovieListActivity.this,"Please insert correct data..",Toast.LENGTH_LONG).show();
+            }
         }
+
         movie = new Movie();
     }
     public class GetMovie extends AsyncTask<Object, Object, ArrayList<Movie>> {
@@ -64,7 +76,8 @@ public class MovieListActivity extends AppCompatActivity {
         @Override
         protected ArrayList<Movie> doInBackground(Object... params) {
             try{
-                    if(urlTitle != null && urlActor == null) {
+                   // if(!urlTitle.isEmpty() && urlActor.isEmpty()) {
+                    if(!urlTitle.isEmpty() && urlActor.isEmpty()) {
                         movie.show_title = getData().getString("show_title");
                         movie.poster = getData().getString("poster");
                         movie.runtime = getData().getString("runtime");
@@ -84,8 +97,11 @@ public class MovieListActivity extends AppCompatActivity {
                             movieList.add(movie);
                         }
 
-                    }else if(urlActor != null) {
+
+                    }
+                    if (urlTitle.isEmpty() && !urlActor.isEmpty()){
                         for(int i = 0 ; i<getActorData().length() ; i++){
+                            movie = new Movie();
                             JSONObject jsonObject = getActorData().getJSONObject(i);
                             movie.show_title = jsonObject.getString("show_title");
                             movie.poster = jsonObject.getString("poster");
@@ -125,7 +141,7 @@ public class MovieListActivity extends AppCompatActivity {
     public JSONObject getData(){
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
-                .url(urlTitle)
+                .url(UrlTitlePath)
                 .build();
         try {
             response = client.newCall(request).execute();
@@ -140,7 +156,7 @@ public class MovieListActivity extends AppCompatActivity {
     public JSONArray getActorData(){
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
-                .url(urlActor)
+                .url(UrlActorPath)
                 .build();
         try {
             response = client.newCall(request).execute();

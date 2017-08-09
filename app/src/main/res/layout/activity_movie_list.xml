@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+
     tools:context="com.example.krushitpatel.netflixshows.Activity.MovieListActivity">
     <android.support.v7.widget.RecyclerView
         android:layout_width="fill_parent"
