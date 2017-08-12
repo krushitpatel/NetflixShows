@@ -2,11 +2,14 @@ package com.example.krushitpatel.netflixshows.Activity;
 
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.example.krushitpatel.netflixshows.Adapter.Movie;
@@ -76,56 +79,74 @@ public class MovieListActivity extends AppCompatActivity {
         @Override
         protected ArrayList<Movie> doInBackground(Object... params) {
             try{
+
                    // if(!urlTitle.isEmpty() && urlActor.isEmpty()) {
+
                     if(!urlTitle.isEmpty() && urlActor.isEmpty()) {
-                        movie.show_title = getData().getString("show_title");
-                        movie.poster = getData().getString("poster");
-                        movie.runtime = getData().getString("runtime");
-                        movie.category = getData().getString("category");
-                        movie.unit = Integer.parseInt(getData().getString("unit"));
-                        movie.show_id = Integer.parseInt(getData().getString("show_id"));
-                        movie.release_year = getData().getString("release_year");
-                        movie.rating = getData().getString("rating");
-                        movie.show_cast = getData().getString("show_cast");
-                        movie.director = getData().getString("director");
-                        movie.summary = getData().getString("summary");
-                        movie.mediatype = Integer.parseInt(getData().getString("mediatype"));
-                        if(movieList.isEmpty()){
-                            movieList.add(movie);
-                        }else{
-                            movieList.clear();
-                            movieList.add(movie);
+
+                            movie.show_title = getData().getString("show_title");
+                            movie.poster = getData().getString("poster");
+                            movie.runtime = getData().getString("runtime");
+                            movie.category = getData().getString("category");
+                            movie.unit = Integer.parseInt(getData().getString("unit"));
+                            movie.show_id = Integer.parseInt(getData().getString("show_id"));
+                            movie.release_year = getData().getString("release_year");
+                            movie.rating = getData().getString("rating");
+                            movie.show_cast = getData().getString("show_cast");
+                            movie.director = getData().getString("director");
+                            movie.summary = getData().getString("summary");
+                            movie.mediatype = Integer.parseInt(getData().getString("mediatype"));
+                            if(movieList.isEmpty()){
+                                movieList.add(movie);
+                            }else{
+                                movieList.clear();
+                                movieList.add(movie);
+                            }
                         }
 
 
-                    }
+
                     if (urlTitle.isEmpty() && !urlActor.isEmpty()){
-                        for(int i = 0 ; i<getActorData().length() ; i++){
-                            movie = new Movie();
-                            JSONObject jsonObject = getActorData().getJSONObject(i);
-                            movie.show_title = jsonObject.getString("show_title");
-                            movie.poster = jsonObject.getString("poster");
-                            movie.runtime = jsonObject.getString("runtime");
-                            movie.category = jsonObject.getString("category");
-                            movie.unit = Integer.parseInt(jsonObject.getString("unit"));
-                            movie.show_id = Integer.parseInt(jsonObject.getString("show_id"));
-                            movie.release_year = jsonObject.getString("release_year");
-                            movie.rating = jsonObject.getString("rating");
-                            movie.show_cast = jsonObject.getString("show_cast");
-                            movie.director = jsonObject.getString("director");
-                            movie.summary = jsonObject.getString("summary");
-                            movie.mediatype = jsonObject.getInt("mediatype");
-                            movieList.add(movie);
+                        if(getActorData()!=null){
+                            for(int i = 0 ; i<getActorData().length() ; i++){
+                                movie = new Movie();
+                                JSONObject jsonObject = getActorData().getJSONObject(i);
+                                movie.show_title = jsonObject.getString("show_title");
+                                movie.poster = jsonObject.getString("poster");
+                                movie.runtime = jsonObject.getString("runtime");
+                                movie.category = jsonObject.getString("category");
+                                movie.unit = Integer.parseInt(jsonObject.getString("unit"));
+                                movie.show_id = Integer.parseInt(jsonObject.getString("show_id"));
+                                movie.release_year = jsonObject.getString("release_year");
+                                movie.rating = jsonObject.getString("rating");
+                                movie.show_cast = jsonObject.getString("show_cast");
+                                movie.director = jsonObject.getString("director");
+                                movie.summary = jsonObject.getString("summary");
+                                movie.mediatype = jsonObject.getInt("mediatype");
+                                movieList.add(movie);
+                            }
+                        }else {
+                            Handler h = new Handler(Looper.getMainLooper());
+                            h.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(MovieListActivity.this,"Please insert correct name",Toast.LENGTH_LONG).show();
+                                }
+                            });
+
                         }
+
 
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
+                
                 }
 
             Log.d("Movie data", movieList.toString());
             return movieList;
         }
+
         @Override
         protected void onPostExecute(ArrayList<Movie> aVoid) {
             super.onPostExecute(aVoid);
@@ -138,6 +159,18 @@ public class MovieListActivity extends AppCompatActivity {
             recyclerView.setAdapter(recyclerviewAdapter);
         }
     }
+    public static interface ClickListener{
+        public void onClick(View view, int position);
+        public void onLongClick(View view,int position);
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(progressDialog!=null && progressDialog.isShowing()){
+            progressDialog.cancel();
+        }
+    }
+
     public JSONObject getData(){
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()

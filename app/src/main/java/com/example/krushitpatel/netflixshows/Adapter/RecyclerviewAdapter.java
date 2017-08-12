@@ -1,6 +1,7 @@
 package com.example.krushitpatel.netflixshows.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -17,6 +18,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.example.krushitpatel.netflixshows.Activity.MainActivity;
+import com.example.krushitpatel.netflixshows.Activity.MovieDetailsActivity;
 import com.example.krushitpatel.netflixshows.R;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -54,15 +56,21 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
     }
 
     @Override
-    public void onBindViewHolder(RecyclerViewHolder holder, int position) {
+    public void onBindViewHolder(final RecyclerViewHolder holder, final int position) {
 
         holder.name.setText(movieList.get(position).getShow_title());
          holder.imageView.setImageURI(Uri.parse(movieList.get(position).getPoster()));
         holder.ratingBar.setRating(Float.parseFloat(movieList.get(position).getRating()));
         holder.category.setText(movieList.get(position).getCategory());
-
-//        Picasso.with(context).load(movieList.get(position).getPoster()).placeholder(R.drawable.placeholder)
-//                .resize(100,100).into(holder.imageView);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(context, MovieDetailsActivity.class);
+                i.putExtra("show_title",movieList.get(position).getShow_title().toString());
+                i.putExtra("poster",movieList.get(position).getPoster().toString());
+                context.startActivity(i);
+            }
+        });
 }
 
     @Override
